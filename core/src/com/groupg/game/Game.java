@@ -3,63 +3,98 @@ package com.groupg.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
 import com.groupg.game.board.Board;
-import com.groupg.game.board.PointsPosition;
-import com.groupg.game.gameobject.GameObjectManager;
-import com.groupg.game.gameobject.Piece;
 import com.groupg.game.gameobject.PieceColor;
-import com.groupg.game.gameobject.Point;
 import com.groupg.game.player.Player;
 
 public class Game {
     private Texture millTexture;
     private Board gameBoard;
-    private GameObjectManager gameObjectManager;
-    private Player player;
-    private boolean playerTurn = true; // Temporary!
-    private boolean isMill;
+    private Player whitePlayer;
+    private Player blackPlayer;
+    private boolean whitePlayerTurn = true; // Temporary!
+    private boolean capturePhase;
 
-    public Game() {
+    public Game(MyGame myGame) {
         millTexture = new Texture(Gdx.files.internal("Mill.png"));
-        player = new Player();
+        whitePlayer = new Player(myGame.getCamera());
+        blackPlayer = new Player(myGame.getCamera());
         gameBoard = new Board();
-        gameObjectManager = new GameObjectManager(PointsPosition.NUMBER_OF_POINTS + Player.NUMBER_OF_PLAYER_PIECES * 2);
-        for (int i = 0; i < PointsPosition.NUMBER_OF_POINTS; i++) {
-            gameObjectManager.addObject(new Point(gameBoard, gameBoard.getPointPosition(i), i));
+    }
+
+    public void update(double delta) {
+        if (whitePlayerTurn) whitePlayer.update(delta); else blackPlayer.update(delta);
+        if (capturePhase) {
+            capturePhase(delta);
+        } else {
+            firstPhase(delta);
         }
     }
 
-    public void update(double delta, Vector3 vector3) {
-        if (playerTurn) {
-            gameObjectManager.update(delta, vector3);
-            if (Gdx.input.isTouched()) {
-                int pointClicked = gameObjectManager.getPointClicked();
-                if (pointClicked >= 0) {
-                    if (gameBoard.addPiece(PieceColor.BLUE, pointClicked) && player.maxNumberPlayed()) {
-                        gameObjectManager.addObject(new Piece(PieceColor.BLUE, gameBoard.getPointPosition(pointClicked), pointClicked));
-                        System.out.println(pointClicked);
-                        if (gameBoard.checkHorizontalMill(pointClicked, PieceColor.BLUE) || gameBoard.checkVerticalMill(pointClicked, PieceColor.BLUE)) {
-                            System.out.println("MILL!!");
-                            isMill = true;
-                        }
+    public void render(double delta, SpriteBatch batch) {
+        gameBoard.render(delta, batch);
+    }
+
+    public void dispose() {
+        millTexture.dispose();
+        gameBoard.dispose();
+    }
+
+    private void capturePhase(double delta) {
+        if (whitePlayerTurn) {
+            gameBoard.update(delta, whitePlayer.getMousePosition());
+            if (whitePlayer.isPlay()) {
+                if (gameBoard.isCaptureValid(whitePlayer.getTouchPosition(), PieceColor.WHITE)) {
+                    capturePhase = false;
+                    whitePlayerTurn = false;
+                    System.out.println("CAPTURED!");
+                }
+            }
+        } else {
+            gameBoard.update(delta, blackPlayer.getMousePosition());
+            if (blackPlayer.isPlay()) {
+                if (gameBoard.isCaptureValid(blackPlayer.getTouchPosition(), PieceColor.BLACK)) {
+                    capturePhase = false;
+                    whitePlayerTurn = true;
+                    System.out.println("CAPTURED!");
+                }
+            }
+        }
+    }
+
+    private void firstPhase(double delta) {
+        if (whitePlayerTurn) {
+            gameBoard.update(delta, whitePlayer.getMousePosition());
+            if (whitePlayer.isPlay() && whitePlayer.maxNumberPlayed()) {
+                if (gameBoard.addPiece(PieceColor.WHITE, whitePlayer.getTouchPosition())) {
+                    whitePlayer.addPiece();
+                    System.out.println("ADD BLUE");
+                    if (gameBoard.isMill(whitePlayer.getTouchPosition(), PieceColor.WHITE)) {
+                        System.out.println("IS MILLLLL BLUE");
+                        capturePhase = true;
+                    } else {
+                        whitePlayerTurn = false;
+                    }
+                }
+            }
+        } else {
+            gameBoard.update(delta, blackPlayer.getMousePosition());
+            if (blackPlayer.isPlay() && blackPlayer.maxNumberPlayed()) {
+                if (gameBoard.addPiece(PieceColor.BLACK, blackPlayer.getTouchPosition())) {
+                    blackPlayer.addPiece();
+                    System.out.println("ADD RED");
+                    if (gameBoard.isMill(blackPlayer.getTouchPosition(), PieceColor.BLACK)) {
+                        System.out.println("IS MILLLLL RED");
+                        capturePhase = true;
+                    } else {
+                        whitePlayerTurn = true;
                     }
                 }
             }
         }
     }
 
-    public void render(double delta, SpriteBatch batch) {
-        gameObjectManager.render(delta, batch);
-        if (isMill) {
-            batch.draw(millTexture,
-                    MyGame.BOARD_WIDTH / 2 - millTexture.getWidth() / 2,
-                    MyGame.BOARD_HEIGHT / 2 - millTexture.getHeight() / 2);
-        }
-    }
+    private void secondPhase(double delta) {
 
-    public void dispose() {
-        gameObjectManager.dispose();
-        millTexture.dispose();
     }
 }

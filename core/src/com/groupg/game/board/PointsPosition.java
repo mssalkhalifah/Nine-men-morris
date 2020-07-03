@@ -11,30 +11,30 @@ public class PointsPosition {
 
     public PointsPosition() {
         pointPositions = new Vector3[NUMBER_OF_POINTS];
-        pointPositions[0] = new Vector3(3, 109, 0);
-        pointPositions[1] = new Vector3(56, 109, 0);
-        pointPositions[2] = new Vector3(109, 109, 0);
-        pointPositions[3] = new Vector3(23, 89, 0);
-        pointPositions[4] = new Vector3(56, 89, 0);
-        pointPositions[5] = new Vector3(89, 89, 0);
-        pointPositions[6] = new Vector3(43, 69, 0);
-        pointPositions[7] = new Vector3(56, 69, 0);
-        pointPositions[8] = new Vector3(69, 69, 0);
-        pointPositions[9] = new Vector3(3, 56, 0);
-        pointPositions[10] = new Vector3(23, 56, 0);
-        pointPositions[11] = new Vector3(43, 56, 0);
-        pointPositions[12] = new Vector3(69, 56, 0);
-        pointPositions[13] = new Vector3(89, 56, 0);
-        pointPositions[14] = new Vector3(109, 56, 0);
-        pointPositions[15] = new Vector3(43, 43, 0);
-        pointPositions[16] = new Vector3(56, 43, 0);
-        pointPositions[17] = new Vector3(69, 43, 0);
-        pointPositions[18] = new Vector3(23, 23, 0);
-        pointPositions[19] = new Vector3(56, 23, 0);
-        pointPositions[20] = new Vector3(89, 23, 0);
-        pointPositions[21] = new Vector3(3, 3, 0);
-        pointPositions[22] = new Vector3(56, 3, 0);
-        pointPositions[23] = new Vector3(109, 3, 0);
+        pointPositions[0] = new Vector3(307, 489, 0);
+        pointPositions[1] = new Vector3(526, 489, 0);
+        pointPositions[2] = new Vector3(745, 489, 0);
+        pointPositions[3] = new Vector3(385, 414, 0);
+        pointPositions[4] = new Vector3(526, 414, 0);
+        pointPositions[5] = new Vector3(667, 414, 0);
+        pointPositions[6] = new Vector3(463, 338, 0);
+        pointPositions[7] = new Vector3(526, 338, 0);
+        pointPositions[8] = new Vector3(588, 338, 0);
+        pointPositions[9] = new Vector3(307, 277, 0);
+        pointPositions[10] = new Vector3(385, 277, 0);
+        pointPositions[11] = new Vector3(463, 277, 0);
+        pointPositions[12] = new Vector3(588, 277, 0);
+        pointPositions[13] = new Vector3(667, 277, 0);
+        pointPositions[14] = new Vector3(745, 277, 0);
+        pointPositions[15] = new Vector3(463, 217, 0);
+        pointPositions[16] = new Vector3(526, 217, 0);
+        pointPositions[17] = new Vector3(588, 217, 0);
+        pointPositions[18] = new Vector3(385, 141, 0);
+        pointPositions[19] = new Vector3(526, 141, 0);
+        pointPositions[20] = new Vector3(667, 141, 0);
+        pointPositions[21] = new Vector3(307, 65, 0);
+        pointPositions[22] = new Vector3(526, 65, 0);
+        pointPositions[23] = new Vector3(745, 65, 0);
     }
 
     // Point ranges from 0 ~ 23

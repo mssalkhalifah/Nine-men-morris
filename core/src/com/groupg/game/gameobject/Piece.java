@@ -2,34 +2,47 @@ package com.groupg.game.gameobject;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
-public class Piece extends GameObject {
+public class Piece {
+    private Vector3 position;
+    private Texture pieceTexture;
+    private Texture selectTexture;
+    private Sprite pieceSprite;
+    private Sprite selectSprite;
     private PieceColor pieceColor;
+    private int pieceNumber;
 
-    public Piece(PieceColor pieceColor, Vector3 position, int pointNumber) {
-        super((pieceColor == PieceColor.BLUE)
-                ? new Texture(Gdx.files.internal("Player.png"))
-                : new Texture(Gdx.files.internal("Enemy.png")),
-                position, pointNumber);
-
+    public Piece(Vector3 position, PieceColor pieceColor, int pieceNumber) {
+        this.position = position;
         this.pieceColor = pieceColor;
-        sprite.setPosition(position.x - 6 / 2, position.y - 6 / 2);
+        this.pieceNumber = pieceNumber;
+
+        pieceTexture = new Texture(Gdx.files.internal((pieceColor == PieceColor.WHITE) ? "White_Piece.png" : "Black_Piece.png"));
+        selectTexture = new Texture(Gdx.files.internal("Select_2.png"));
+
+        pieceSprite = new Sprite(pieceTexture);
+        pieceSprite.setPosition(position.x - pieceSprite.getWidth() / 2, position.y - (pieceSprite.getHeight() + 24) / 2);
+        selectSprite = new Sprite(selectTexture);
+        selectSprite.setPosition(position.x - selectSprite.getWidth() / 2, position.y - selectSprite.getHeight() / 2);
     }
 
-    @Override
     public void update(double delta, Vector3 vector3) {
 
     }
 
-    @Override
     public void render(double delta, SpriteBatch batch) {
-        sprite.draw(batch);
+        pieceSprite.draw(batch);
     }
 
-    @Override
     public void dispose() {
-        texture.dispose();
+        selectTexture.dispose();
+        pieceTexture.dispose();
+    }
+
+    public int getPieceNumber() {
+        return pieceNumber;
     }
 }
