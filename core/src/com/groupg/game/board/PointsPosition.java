@@ -2,14 +2,58 @@ package com.groupg.game.board;
 
 import com.badlogic.gdx.math.Vector3;
 
-import java.util.BitSet;
+import java.util.*;
 
 public class PointsPosition {
     public static final int NUMBER_OF_POINTS = 24;
 
     private Vector3[] pointPositions;
 
+    private static final HashMap<Integer, Set<Integer>> verticalPositions = new HashMap<>();
+    private static final HashMap<Integer, Set<Integer>> horizontalPositions = new HashMap<>();
+
     public PointsPosition() {
+        int adjacentPositions = 0;
+
+        // Initialize pre-defined positions
+        for (int i = 0; i < NUMBER_OF_POINTS; i++) {
+            if (i % 3 == 0) adjacentPositions = i;
+            horizontalPositions.put(i, new LinkedHashSet<>(Arrays.asList(adjacentPositions, adjacentPositions + 1, adjacentPositions + 2)));
+            verticalPositions.put(i, new LinkedHashSet<Integer>());
+        }
+
+        verticalPositions.get(0).addAll(Arrays.asList(0, 9, 21));
+        verticalPositions.get(9).addAll(Arrays.asList(0, 9, 21));
+        verticalPositions.get(21).addAll(Arrays.asList(0, 9, 21));
+
+        verticalPositions.get(3).addAll(Arrays.asList(3, 10, 18));
+        verticalPositions.get(10).addAll(Arrays.asList(3, 10, 18));
+        verticalPositions.get(18).addAll(Arrays.asList(3, 10, 18));
+
+        verticalPositions.get(6).addAll(Arrays.asList(6, 11, 15));
+        verticalPositions.get(11).addAll(Arrays.asList(6, 11, 15));
+        verticalPositions.get(15).addAll(Arrays.asList(6, 11, 15));
+
+        verticalPositions.get(1).addAll(Arrays.asList(1, 4, 7));
+        verticalPositions.get(4).addAll(Arrays.asList(1, 4, 7));
+        verticalPositions.get(7).addAll(Arrays.asList(1, 4, 7));
+
+        verticalPositions.get(16).addAll(Arrays.asList(16, 19, 22));
+        verticalPositions.get(19).addAll(Arrays.asList(16, 19, 22));
+        verticalPositions.get(22).addAll(Arrays.asList(16, 19, 22));
+
+        verticalPositions.get(8).addAll(Arrays.asList(8, 12, 17));
+        verticalPositions.get(12).addAll(Arrays.asList(8, 12, 17));
+        verticalPositions.get(17).addAll(Arrays.asList(8, 12, 17));
+
+        verticalPositions.get(5).addAll(Arrays.asList(5, 13, 20));
+        verticalPositions.get(13).addAll(Arrays.asList(5, 13, 20));
+        verticalPositions.get(20).addAll(Arrays.asList(5, 13, 20));
+
+        verticalPositions.get(2).addAll(Arrays.asList(2, 14, 23));
+        verticalPositions.get(14).addAll(Arrays.asList(2, 14, 23));
+        verticalPositions.get(23).addAll(Arrays.asList(2, 14, 23));
+
         pointPositions = new Vector3[NUMBER_OF_POINTS];
         pointPositions[0] = new Vector3(307, 489, 0);
         pointPositions[1] = new Vector3(526, 489, 0);
@@ -134,5 +178,33 @@ public class PointsPosition {
             default:
                 return false;
         }
+    }
+
+    public boolean checkValidMovePosition(int currentPosition, int nextPosition) {
+        if (horizontalPositions.get(currentPosition).contains(nextPosition)) {
+            return Math.abs(currentPosition - nextPosition) == 1;
+        }
+
+        if (verticalPositions.get(currentPosition).contains(nextPosition)) {
+            System.out.println(Arrays.toString(verticalPositions.get(currentPosition).toArray()));
+            ArrayList<Integer> verticalSetArray = new ArrayList<>(verticalPositions.get(currentPosition));
+            int currentPositionIndex = verticalSetArray.indexOf(currentPosition);
+
+            System.out.println(currentPosition +" "+ nextPosition);
+            System.out.println(Arrays.toString(verticalSetArray.toArray()));
+
+            // If current position index is in the middle
+            if ((verticalSetArray.size() / 2) == currentPositionIndex)
+                return nextPosition == verticalSetArray.get(currentPositionIndex + 1)
+                        || nextPosition == verticalSetArray.get(currentPositionIndex - 1);
+
+            // If current position index is at the first position
+            if (currentPositionIndex == 0) return nextPosition == verticalSetArray.get(currentPositionIndex + 1);
+
+
+            // If current position index is in the last position
+            if (currentPositionIndex == verticalSetArray.size() - 1) return nextPosition == verticalSetArray.get(currentPositionIndex - 1);
+        }
+        return false;
     }
 }

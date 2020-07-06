@@ -19,7 +19,7 @@ public class Point {
     private int pointNumber;
     private boolean isMouseOver;
 
-    public Point(Vector3 position, Board gameBoard,int pointNumber) {
+    public Point(Vector3 position, Board gameBoard, int pointNumber) {
         this.gameBoard = gameBoard;
         this.pointNumber = pointNumber;
 
