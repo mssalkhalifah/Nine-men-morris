@@ -11,185 +11,59 @@ import com.groupg.game.player.Player;
 import java.util.Stack;
 
 public class Game {
-    private CurrentTurn currentTurn;
-    private GameRule gameRule;
     private Texture millTexture;
     private Board gameBoard;
+    private GameState gameState;
     private Player whitePlayer;
     private Player blackPlayer;
-    private Stack<Phase> gamePhaseStack;
 
     public Game(MyGame myGame) {
-        currentTurn = new CurrentTurn(120, 450);
         millTexture = new Texture(Gdx.files.internal("Mill.png"));
-        whitePlayer = new Player(myGame.getCamera());
-        blackPlayer = new Player(myGame.getCamera());
+        whitePlayer = new Player(myGame.getCamera(), PieceColor.WHITE);
+        blackPlayer = new Player(myGame.getCamera(), PieceColor.BLACK);
         gameBoard = new Board();
-        gamePhaseStack = new Stack<>();
-        gamePhaseStack.push(Phase.FIRST_PHASE);
-        gameRule = new GameRule(whitePlayer, blackPlayer);
+        gameState = new GameState(whitePlayer, blackPlayer, gameBoard);
     }
 
     public void update(float delta) {
-        currentTurn.update(delta);
+        gameState.update(delta);
 
-        gameRule.update(delta);
+        Player player = (gameState.getCurrentTurn()) ? whitePlayer : blackPlayer;
+        player.update(delta);
+        gameBoard.update(delta, player.getMousePosition());
 
-        if (currentTurn.getCurrentTurn()) whitePlayer.update(delta); else blackPlayer.update(delta);
+        if (player.isPlay()) {
+            switch (gameState.getGameStates().peek()) {
+                case FIRST_PHASE:
+                    gameState.firstPhase(player);
+                    break;
 
-        switch (gamePhaseStack.peek()) {
-            case FIRST_PHASE:
-                firstPhase(delta);
-                break;
+                case SECOND_PHASE:
+                    gameState.secondPhase(player);
+                    break;
 
-            case SECOND_PHASE:
-                secondPhase(delta);
-                break;
+                case CAPTURE:
+                    gameState.captureState(player);
+                    break;
 
-            case CAPTURE:
-                capturePhase(delta);
-                break;
+                case MOVE:
+                    gameState.movingState(player);
+                    break;
 
-            case MOVE:
-                movingPhase(delta);
+                default:
+                    throw new IllegalArgumentException("Unknown game state");
+            }
         }
     }
 
     public void render(float delta, SpriteBatch batch) {
+        gameState.render(delta, batch);
         gameBoard.render(delta, batch);
-        currentTurn.render(delta, batch);
-        gameRule.render(delta, batch);
     }
 
     public void dispose() {
+        gameState.dispose();
         millTexture.dispose();
         gameBoard.dispose();
-        currentTurn.dispose();
-        gameRule.dispose();
-    }
-
-    private void capturePhase(float delta) {
-        if (currentTurn.getCurrentTurn()) {
-            gameBoard.update(delta, whitePlayer.getMousePosition());
-            if (whitePlayer.isPlay()) {
-                if (gameBoard.isCaptureValid(whitePlayer.getTouchPosition(), PieceColor.WHITE)) {
-                    blackPlayer.decrementNumberOfPieces();
-                    gamePhaseStack.pop();
-                    currentTurn.changeCurrentTurn();
-                    System.out.println("CAPTURED!");
-                }
-            }
-        } else {
-            gameBoard.update(delta, blackPlayer.getMousePosition());
-            if (blackPlayer.isPlay()) {
-                if (gameBoard.isCaptureValid(blackPlayer.getTouchPosition(), PieceColor.BLACK)) {
-                    whitePlayer.decrementNumberOfPieces();
-                    gamePhaseStack.pop();
-                    currentTurn.changeCurrentTurn();
-                    System.out.println("CAPTURED!");
-                }
-            }
-        }
-    }
-
-    private void movingPhase(float delta) {
-        if (currentTurn.getCurrentTurn()) {
-            gameBoard.update(delta, whitePlayer.getMousePosition());
-            if (whitePlayer.isPlay()) {
-                whitePlayer.setSelectedPiece(gameBoard.getSelectPiece(PieceColor.WHITE, whitePlayer.getTouchPosition()));
-                System.out.println("White piece selected!");
-                if (gameBoard.isMoveValid(whitePlayer.getSelectedPiece().getPieceNumber(), whitePlayer.getTouchPosition(), PieceColor.WHITE)) {
-                    if (gameBoard.isMill(whitePlayer.getSelectedPiece().getPieceNumber(), PieceColor.WHITE)) {
-                        gamePhaseStack.pop();
-                        gamePhaseStack.push(Phase.CAPTURE);
-                        System.out.println("White player Mill!");
-                    } else {
-                        gamePhaseStack.pop();
-                        currentTurn.changeCurrentTurn();
-                        whitePlayer.clearSelectedPiece();
-                        System.out.println("White piece moved!");
-                    }
-                }
-            }
-        } else {
-            gameBoard.update(delta, blackPlayer.getMousePosition());
-            if (blackPlayer.isPlay()) {
-                blackPlayer.setSelectedPiece(gameBoard.getSelectPiece(PieceColor.BLACK, blackPlayer.getTouchPosition()));
-                System.out.println("Black piece selected!");
-                if (gameBoard.isMoveValid(blackPlayer.getSelectedPiece().getPieceNumber(), blackPlayer.getTouchPosition(), PieceColor.BLACK)) {
-                    if (gameBoard.isMill(blackPlayer.getSelectedPiece().getPieceNumber(), PieceColor.BLACK)) {
-                        gamePhaseStack.pop();
-                        gamePhaseStack.push(Phase.CAPTURE);
-                        System.out.println("Black player Mill!");
-                    } else {
-                        gamePhaseStack.pop();
-                        currentTurn.changeCurrentTurn();
-                        blackPlayer.clearSelectedPiece();
-                        System.out.println("Black piece moved!");
-                    }
-                }
-            }
-        }
-    }
-
-    private void firstPhase(float delta) {
-        if (currentTurn.getCurrentTurn()) {
-            gameBoard.update(delta, whitePlayer.getMousePosition());
-            if (whitePlayer.isPlay() && !whitePlayer.maxNumberPlayed()) {
-                if (gameBoard.addPiece(PieceColor.WHITE, whitePlayer.getTouchPosition())) {
-                    whitePlayer.addPiece();
-                    System.out.println("ADD BLUE");
-                    if (gameBoard.isMill(gameBoard.getPointNumber(whitePlayer.getTouchPosition()), PieceColor.WHITE)) {
-                        System.out.println("IS MILLLLL BLUE");
-                        gamePhaseStack.push(Phase.CAPTURE);
-                    } else {
-                        currentTurn.changeCurrentTurn();
-                    }
-                }
-            }
-        } else {
-            gameBoard.update(delta, blackPlayer.getMousePosition());
-            if (blackPlayer.isPlay() && !blackPlayer.maxNumberPlayed()) {
-                if (gameBoard.addPiece(PieceColor.BLACK, blackPlayer.getTouchPosition())) {
-                    blackPlayer.addPiece();
-                    System.out.println("ADD RED");
-                    if (gameBoard.isMill(gameBoard.getPointNumber(blackPlayer.getTouchPosition()), PieceColor.BLACK)) {
-                        System.out.println("IS MILLLLL RED");
-                        gamePhaseStack.push(Phase.CAPTURE);
-                    } else {
-                        currentTurn.changeCurrentTurn();
-                    }
-                }
-            }
-        }
-
-        if (whitePlayer.maxNumberPlayed() && blackPlayer.maxNumberPlayed()) {
-            gamePhaseStack.clear();
-            gamePhaseStack.push(Phase.SECOND_PHASE);
-        }
-    }
-
-    private void secondPhase(float delta) {
-        if (currentTurn.getCurrentTurn()) {
-            gameBoard.update(delta, whitePlayer.getMousePosition());
-            if (whitePlayer.isPlay()) {
-                whitePlayer.setSelectedPiece(gameBoard.getSelectPiece(PieceColor.WHITE, whitePlayer.getTouchPosition()));
-                if (whitePlayer.getSelectedPiece() != null) {
-                    System.out.println("White piece selected!");
-                    gamePhaseStack.push(Phase.MOVE);
-                    whitePlayer.setSelectedPiece(whitePlayer.getSelectedPiece());
-                }
-            }
-        } else {
-            gameBoard.update(delta, blackPlayer.getMousePosition());
-            if (blackPlayer.isPlay()) {
-                blackPlayer.setSelectedPiece(gameBoard.getSelectPiece(PieceColor.BLACK, blackPlayer.getTouchPosition()));
-                if (blackPlayer.getSelectedPiece() != null) {
-                    System.out.println("Black piece selected!");
-                    gamePhaseStack.push(Phase.MOVE);
-                    blackPlayer.setSelectedPiece(blackPlayer.getSelectedPiece());
-                }
-            }
-        }
     }
 }

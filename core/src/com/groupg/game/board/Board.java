@@ -74,37 +74,6 @@ public class Board {
         return false;
     }
 
-    public boolean isMill(Vector3 position, PieceColor pieceColor) {
-        int pointNumber = getPointNumber(position);
-        return isMill(pointNumber, pieceColor);
-    }
-
-    public boolean isMill(int pointNumber, PieceColor pieceColor) {
-        BitSet bitSetColor = (pieceColor == PieceColor.WHITE) ? whiteBitBoard : blackBitBoard;
-        return pointPosition.checkMill(pointNumber, bitSetColor);
-    }
-
-    public boolean isCaptureValid(Vector3 position, PieceColor pieceColor) {
-        int pointNumber = getPointNumber(position);
-
-        if (pointNumber >= 0 && pieceColor == PieceColor.WHITE && blackBitBoard.get(pointNumber) && !isMill(position, PieceColor.BLACK)) {
-            removePiece(pointNumber);
-            blackBitBoard.clear(pointNumber);
-            System.out.println(blackBitBoard);
-            System.out.println(whiteBitBoard);
-            return true;
-        }
-
-        if (pointNumber >= 0 && pieceColor == PieceColor.BLACK && whiteBitBoard.get(pointNumber) && !isMill(position, PieceColor.WHITE)) {
-            removePiece(pointNumber);
-            whiteBitBoard.clear(pointNumber);
-            System.out.println(blackBitBoard);
-            System.out.println(whiteBitBoard);
-            return true;
-        }
-        return false;
-    }
-
     public Piece getSelectPiece(PieceColor pieceColor, Vector3 touchPosition) {
         for (int i = 0; i < pieceArray.size; i++) {
             if (pieceArray.get(i).getPieceColor() == pieceColor && pieceArray.get(i).isCollide(touchPosition)) {
@@ -116,39 +85,8 @@ public class Board {
         return null;
     }
 
-    public boolean isMoveValid(int currentPosition, Vector3 nextPointPosition, PieceColor pieceColor) {
-            int nextPiecePosition = getPointNumber(nextPointPosition);
-
-            if (nextPiecePosition >= 0
-                    && pieceColor == PieceColor.WHITE
-                    && isEmptyPoint(nextPiecePosition)
-                    && pointPosition.checkValidMovePosition(currentPosition, nextPiecePosition)) {
-                Piece currentSelectedPiece = getPiece(currentPosition, pieceColor);
-                currentSelectedPiece.setPieceNumber(nextPiecePosition);
-                currentSelectedPiece.setNextPosition(pointPosition.getPointPosition(nextPiecePosition));
-                currentSelectedPiece.setMoving(true);
-                whiteBitBoard.clear(currentPosition);
-                whiteBitBoard.set(nextPiecePosition);
-                clearSelected();
-                System.out.println(whiteBitBoard);
-                return true;
-            }
-
-        if (nextPiecePosition >= 0
-                && pieceColor == PieceColor.BLACK
-                && isEmptyPoint(nextPiecePosition)
-                && pointPosition.checkValidMovePosition(currentPosition, nextPiecePosition)) {
-            Piece currentSelectedPiece = getPiece(currentPosition, pieceColor);
-            currentSelectedPiece.setPieceNumber(nextPiecePosition);
-            currentSelectedPiece.setNextPosition(pointPosition.getPointPosition(nextPiecePosition));
-            currentSelectedPiece.setMoving(true);
-            blackBitBoard.clear(currentPosition);
-            blackBitBoard.set(nextPiecePosition);
-            clearSelected();
-            System.out.println(blackBitBoard);
-            return true;
-        }
-        return false;
+    public BitSet getBitBoard(PieceColor pieceColor) {
+        return (pieceColor == PieceColor.WHITE) ? whiteBitBoard : blackBitBoard;
     }
 
     public int getPointNumber(Vector3 position) {
@@ -163,26 +101,26 @@ public class Board {
         return !(whiteBitBoard.get(pointNumber) || blackBitBoard.get(pointNumber));
     }
 
-    private Piece getPiece(int pieceNumber, PieceColor pieceColor) {
+    public Piece getPiece(int pieceNumber, PieceColor pieceColor) {
         for (Piece piece : pieceArray) {
             if (piece.getPieceNumber() == pieceNumber && piece.getPieceColor() == pieceColor) return piece;
         }
         throw new IllegalArgumentException("Piece number:" + pieceNumber + " not found");
     }
 
-    private void removePiece(int pieceNumber) {
-        for (int i = 0; i < pieceArray.size; i++) {
-            if (pieceArray.get(i).getPieceNumber() == pieceNumber) {
-                pieceArray.removeIndex(i);
-                break;
+    public void clearSelected() {
+        for (Piece piece : pieceArray) {
+            if (piece.isSelected()) {
+                piece.setSelected(false);
             }
         }
     }
 
-    private void clearSelected() {
-        for (Piece piece : pieceArray) {
-            if (piece.isSelected()) {
-                piece.setSelected(false);
+    public void removePiece(int pieceNumber) {
+        for (int i = 0; i < pieceArray.size; i++) {
+            if (pieceArray.get(i).getPieceNumber() == pieceNumber) {
+                pieceArray.removeIndex(i);
+                break;
             }
         }
     }

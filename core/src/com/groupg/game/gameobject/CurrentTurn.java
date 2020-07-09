@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector3;
 import java.util.Random;
 
 public class CurrentTurn {
+    private static final int POSITION_X = 120, POSITION_Y = 450;
     private static final int FRAME_COLUMN = 9, FRAME_ROW = 1;
     private static final int SPRITE_HEIGHT = 32, SPRITE_WIDTH = 32;
     private Vector3 position;
@@ -22,15 +23,15 @@ public class CurrentTurn {
     private float stateTime;
     private boolean whitePlayerTurn;
 
-    public CurrentTurn(int positionX, int positionY) {
-        this.position = new Vector3(positionX - SPRITE_WIDTH / 2, positionY - SPRITE_HEIGHT / 2, 0);
+    public CurrentTurn() {
+        this.position = new Vector3(POSITION_X - SPRITE_WIDTH / 2, POSITION_Y - SPRITE_HEIGHT / 2, 0);
 
         currentTurnFontTexture = new Texture(Gdx.files.internal("Current_Turn_Text.png"));
         currentTurnTexture = new Texture(Gdx.files.internal("Piece_Transform_Sprite_Sheet.png"));
 
         currentTurnTextSprite = new Sprite(currentTurnFontTexture);
-        currentTurnTextSprite.setPosition(positionX - currentTurnFontTexture.getWidth() / 2,
-                (positionY + 32) - currentTurnFontTexture.getHeight() / 2);
+        currentTurnTextSprite.setPosition(POSITION_X - currentTurnFontTexture.getWidth() / 2,
+                (POSITION_Y + 32) - currentTurnFontTexture.getHeight() / 2);
 
         TextureRegion[][] temp = TextureRegion.split(currentTurnTexture,
                 currentTurnTexture.getWidth() / FRAME_COLUMN,

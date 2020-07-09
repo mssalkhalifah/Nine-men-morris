@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.groupg.game.gameobject.Piece;
+import com.groupg.game.gameobject.PieceColor;
 
 public class Player {
     public static final int NUMBER_OF_PLAYER_PIECES = 9;
@@ -19,7 +20,10 @@ public class Player {
 
     private OrthographicCamera camera;
 
-    public Player(OrthographicCamera camera) {
+    private PieceColor pieceColor;
+
+    public Player(OrthographicCamera camera, PieceColor pieceColor) {
+        this.pieceColor = pieceColor;
         this.camera = camera;
         touchPosition = new Vector3();
         mousePosition = new Vector3();
@@ -39,6 +43,14 @@ public class Player {
     public void addPiece() {
         currentNumberOfPieces++;
         numberOfPiecesPlayed++;
+    }
+
+    public PieceColor getPieceColor() {
+        return pieceColor;
+    }
+
+    public void setPieceColor(PieceColor pieceColor) {
+        this.pieceColor = pieceColor;
     }
 
     public Vector3 getTouchPosition() {

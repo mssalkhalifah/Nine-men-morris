@@ -5,7 +5,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector3;
+import com.groupg.game.board.Board;
+import com.groupg.game.board.PointsPosition;
+import com.groupg.game.gameobject.Piece;
+import com.groupg.game.gameobject.PieceColor;
 import com.groupg.game.player.Player;
+
+import java.util.BitSet;
 
 public class GameRule {
     private static final int FRAME_COLUMN = 11, FRAME_ROW = 1;
@@ -29,7 +36,12 @@ public class GameRule {
     private Player whitePlayer;
     private Player blackPlayer;
 
-    public GameRule(Player whitePlayer, Player blackPlayer) {
+    private Board board;
+    private PointsPosition pointsPosition;
+
+    public GameRule(Player whitePlayer, Player blackPlayer, Board board, PointsPosition pointsPosition) {
+        this.board = board;
+        this.pointsPosition = pointsPosition;
         this.whitePlayer = whitePlayer;
         this.blackPlayer = blackPlayer;
 
@@ -88,5 +100,40 @@ public class GameRule {
         blackPieceTexture.dispose();
         fontTextureWhite.dispose();
         fontTextureBlack.dispose();
+    }
+
+    public boolean checkMill(int pointNumber, BitSet bitSetBoard) {
+        return pointsPosition.checkMill(pointNumber, bitSetBoard);
+    }
+
+    public boolean checkMoveValid(int currentPosition, Vector3 nextPosition, PieceColor pieceColor) {
+        int nextPiecePosition = board.getPointNumber(nextPosition);
+
+        if (nextPiecePosition >= 0
+                && board.isEmptyPoint(nextPiecePosition)
+                && pointsPosition.checkValidMovePosition(currentPosition, nextPiecePosition)) {
+            Piece currentSelectedPiece = board.getPiece(currentPosition, pieceColor);
+            currentSelectedPiece.setPieceNumber(nextPiecePosition);
+            currentSelectedPiece.setNextPosition(pointsPosition.getPointPosition(nextPiecePosition));
+            currentSelectedPiece.setMoving(true);
+            board.getBitBoard(pieceColor).clear(currentPosition);
+            board.getBitBoard(pieceColor).set(nextPiecePosition);
+            board.clearSelected();
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean checkCaptureValid(Vector3 position, PieceColor pieceColor) {
+        int pointNumber = board.getPointNumber(position);
+
+        if (pointNumber >= 0 && !checkMill(pointNumber, board.getBitBoard(pieceColor))) {
+            board.removePiece(pointNumber);
+            board.getBitBoard((pieceColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE).clear(pointNumber);
+            return true;
+        }
+
+        return false;
     }
 }
