@@ -8,9 +8,9 @@ import com.groupg.game.gameobject.Piece;
 public class Player {
     public static final int NUMBER_OF_PLAYER_PIECES = 9;
 
+    private int totalNumberOfPieces;
     private int currentNumberOfPieces;
-
-    private boolean isPlay;
+    private int numberOfPiecesPlayed;
 
     private Vector3 touchPosition;
     private Vector3 mousePosition;
@@ -23,21 +23,22 @@ public class Player {
         this.camera = camera;
         touchPosition = new Vector3();
         mousePosition = new Vector3();
+        totalNumberOfPieces = NUMBER_OF_PLAYER_PIECES;
     }
 
     public void update(double delta) {
         mousePosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(mousePosition);
-        isPlay = false;
-        if (Gdx.input.justTouched()) {
+
+        if (isPlay()) {
             touchPosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPosition);
-            isPlay = true;
         }
     }
 
     public void addPiece() {
         currentNumberOfPieces++;
+        numberOfPiecesPlayed++;
     }
 
     public Vector3 getTouchPosition() {
@@ -61,11 +62,23 @@ public class Player {
     }
 
     public boolean isPlay() {
-        return isPlay;
+        return Gdx.input.justTouched();
     }
 
     public boolean maxNumberPlayed() {
-        return currentNumberOfPieces >= NUMBER_OF_PLAYER_PIECES;
+        return numberOfPiecesPlayed >= NUMBER_OF_PLAYER_PIECES;
     }
 
+    public int getTotalNumberOfPieces() {
+        return totalNumberOfPieces;
+    }
+
+    public int getCurrentNumberOfPieces() {
+        return currentNumberOfPieces;
+    }
+
+    public void decrementNumberOfPieces() {
+        --totalNumberOfPieces;
+        --currentNumberOfPieces;
+    }
 }

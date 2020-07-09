@@ -7,10 +7,10 @@ import java.util.*;
 public class PointsPosition {
     public static final int NUMBER_OF_POINTS = 24;
 
-    private Vector3[] pointPositions;
+    private final HashMap<Integer, Set<Integer>> verticalPositions = new HashMap<>();
+    private final HashMap<Integer, Set<Integer>> horizontalPositions = new HashMap<>();
 
-    private static final HashMap<Integer, Set<Integer>> verticalPositions = new HashMap<>();
-    private static final HashMap<Integer, Set<Integer>> horizontalPositions = new HashMap<>();
+    private Vector3[] pointPositions;
 
     public PointsPosition() {
         int adjacentPositions = 0;
@@ -86,98 +86,14 @@ public class PointsPosition {
         return pointPositions[point];
     }
 
-    public boolean checkHorizontalMill(int pointPosition, BitSet bitBoard) {
-        switch (pointPosition) {
-            case 0:
-            case 1:
-            case 2:
-                return bitBoard.get(0) && bitBoard.get(1) && bitBoard.get(2);
+    public boolean checkMill(int pointPosition, BitSet bitBoard) {
+        ArrayList<Integer> horizontalPointSet = new ArrayList<>(horizontalPositions.get(pointPosition));
+        ArrayList<Integer> verticalPointSet = new ArrayList<>(verticalPositions.get(pointPosition));
 
-            case 3:
-            case 4:
-            case 5:
-                return bitBoard.get(3) && bitBoard.get(4) && bitBoard.get(5);
+        boolean horizontalMill = bitBoard.get(horizontalPointSet.get(0)) && bitBoard.get(horizontalPointSet.get(1)) && bitBoard.get(horizontalPointSet.get(2));
+        boolean verticalMill = bitBoard.get(verticalPointSet.get(0)) && bitBoard.get(verticalPointSet.get(1)) && bitBoard.get(verticalPointSet.get(2));
 
-            case 6:
-            case 7:
-            case 8:
-                return bitBoard.get(6) && bitBoard.get(7) && bitBoard.get(8);
-
-            case 9:
-            case 10:
-            case 11:
-                return bitBoard.get(9) && bitBoard.get(10) && bitBoard.get(11);
-
-            case 12:
-            case 13:
-            case 14:
-                return bitBoard.get(12) && bitBoard.get(13) && bitBoard.get(14);
-
-            case 15:
-            case 16:
-            case 17:
-                return bitBoard.get(15) && bitBoard.get(16) && bitBoard.get(17);
-
-            case 18:
-            case 19:
-            case 20:
-                return bitBoard.get(18) && bitBoard.get(19) && bitBoard.get(20);
-
-            case 21:
-            case 22:
-            case 23:
-                return bitBoard.get(21) && bitBoard.get(22) && bitBoard.get(23);
-
-            default:
-                return false;
-        }
-    }
-
-    public boolean checkVerticalMill(int pointPosition, BitSet bitBoard) {
-        switch (pointPosition) {
-            case 0:
-            case 9:
-            case 21:
-                return bitBoard.get(0) && bitBoard.get(9) && bitBoard.get(21);
-
-            case 3:
-            case 10:
-            case 18:
-                return bitBoard.get(3) && bitBoard.get(10) && bitBoard.get(18);
-
-            case 6:
-            case 11:
-            case 15:
-                return bitBoard.get(6) && bitBoard.get(11) && bitBoard.get(15);
-
-            case 1:
-            case 4:
-            case 7:
-                return bitBoard.get(1) && bitBoard.get(4) && bitBoard.get(7);
-
-            case 16:
-            case 19:
-            case 22:
-                return bitBoard.get(16) && bitBoard.get(19) && bitBoard.get(22);
-
-            case 8:
-            case 12:
-            case 17:
-                return bitBoard.get(8) && bitBoard.get(12) && bitBoard.get(17);
-
-            case 5:
-            case 13:
-            case 20:
-                return bitBoard.get(5) && bitBoard.get(13) && bitBoard.get(20);
-
-            case 2:
-            case 14:
-            case 23:
-                return bitBoard.get(2) && bitBoard.get(14) && bitBoard.get(23);
-
-            default:
-                return false;
-        }
+        return horizontalMill || verticalMill;
     }
 
     public boolean checkValidMovePosition(int currentPosition, int nextPosition) {
@@ -186,17 +102,12 @@ public class PointsPosition {
         }
 
         if (verticalPositions.get(currentPosition).contains(nextPosition)) {
-            System.out.println(Arrays.toString(verticalPositions.get(currentPosition).toArray()));
+            //System.out.println(Arrays.toString(verticalPositions.get(currentPosition).toArray()));
             ArrayList<Integer> verticalSetArray = new ArrayList<>(verticalPositions.get(currentPosition));
             int currentPositionIndex = verticalSetArray.indexOf(currentPosition);
 
-            System.out.println(currentPosition +" "+ nextPosition);
-            System.out.println(Arrays.toString(verticalSetArray.toArray()));
-
-            // If current position index is in the middle
-            if ((verticalSetArray.size() / 2) == currentPositionIndex)
-                return nextPosition == verticalSetArray.get(currentPositionIndex + 1)
-                        || nextPosition == verticalSetArray.get(currentPositionIndex - 1);
+            //System.out.println(currentPosition +" "+ nextPosition);
+            //System.out.println(Arrays.toString(verticalSetArray.toArray()));
 
             // If current position index is at the first position
             if (currentPositionIndex == 0) return nextPosition == verticalSetArray.get(currentPositionIndex + 1);
@@ -204,6 +115,10 @@ public class PointsPosition {
 
             // If current position index is in the last position
             if (currentPositionIndex == verticalSetArray.size() - 1) return nextPosition == verticalSetArray.get(currentPositionIndex - 1);
+
+            // If current position index is in between the first and last position
+            return nextPosition == verticalSetArray.get(currentPositionIndex + 1)
+                    || nextPosition == verticalSetArray.get(currentPositionIndex - 1);
         }
         return false;
     }

@@ -76,15 +76,12 @@ public class Board {
 
     public boolean isMill(Vector3 position, PieceColor pieceColor) {
         int pointNumber = getPointNumber(position);
-        BitSet bitSetColor = (pieceColor == PieceColor.WHITE) ? whiteBitBoard : blackBitBoard;
-        return pointPosition.checkHorizontalMill(pointNumber, bitSetColor)
-                || pointPosition.checkVerticalMill(pointNumber, bitSetColor);
+        return isMill(pointNumber, pieceColor);
     }
 
     public boolean isMill(int pointNumber, PieceColor pieceColor) {
         BitSet bitSetColor = (pieceColor == PieceColor.WHITE) ? whiteBitBoard : blackBitBoard;
-        return pointPosition.checkHorizontalMill(pointNumber, bitSetColor)
-                || pointPosition.checkVerticalMill(pointNumber, bitSetColor);
+        return pointPosition.checkMill(pointNumber, bitSetColor);
     }
 
     public boolean isCaptureValid(Vector3 position, PieceColor pieceColor) {
@@ -154,6 +151,14 @@ public class Board {
         return false;
     }
 
+    public int getPointNumber(Vector3 position) {
+        int pointNumber = -1;
+        for (Point point : pointArray) {
+            if (point.isCollide(position)) pointNumber = point.getPointNumber();
+        }
+        return pointNumber;
+    }
+
     public boolean isEmptyPoint(int pointNumber) {
         return !(whiteBitBoard.get(pointNumber) || blackBitBoard.get(pointNumber));
     }
@@ -163,14 +168,6 @@ public class Board {
             if (piece.getPieceNumber() == pieceNumber && piece.getPieceColor() == pieceColor) return piece;
         }
         throw new IllegalArgumentException("Piece number:" + pieceNumber + " not found");
-    }
-
-    private int getPointNumber(Vector3 position) {
-        int pointNumber = -1;
-        for (Point point : pointArray) {
-            if (point.isCollide(position)) pointNumber = point.getPointNumber();
-        }
-        return pointNumber;
     }
 
     private void removePiece(int pieceNumber) {

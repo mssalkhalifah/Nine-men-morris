@@ -35,20 +35,11 @@ public class Point {
     }
 
     public void update(double delta, Vector3 position) {
-        if (gameBoard.isEmptyPoint(pointNumber) && highlightRectangle.x <= position.x
-                && highlightRectangle.x + highlightRectangle.width >= position.x
-                && highlightRectangle.y <= position.y
-                && highlightRectangle.y + highlightRectangle.height >= position.y) {
-            isMouseOver = true;
-        } else {
-            isMouseOver = false;
-        }
+        if (gameBoard.isEmptyPoint(pointNumber) && isCollide(position)) isMouseOver = true; else isMouseOver = false;
     }
 
     public void render(double delta, SpriteBatch batch) {
-        if (isMouseOver) {
-            highlightSprite.draw(batch);
-        }
+        if (isMouseOver) highlightSprite.draw(batch);
     }
 
     public void dispose() {

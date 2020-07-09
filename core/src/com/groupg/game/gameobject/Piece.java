@@ -39,15 +39,7 @@ public class Piece {
 
     public void update(float delta, Vector3 position) {
         if (isMoving) updatePosition(delta);
-
-        if (pieceSprite.getX() <= position.x
-                && pieceSprite.getX() + pieceSprite.getWidth() >= position.x
-                && pieceSprite.getY() <= position.y
-                && pieceSprite.getY() + pieceSprite.getHeight() >= position.y) {
-            isMouseOver = true;
-        } else {
-            isMouseOver = false;
-        }
+        if (isCollide(position)) isMouseOver = true; else isMouseOver = false;
     }
 
     public void render(float delta, SpriteBatch batch) {
