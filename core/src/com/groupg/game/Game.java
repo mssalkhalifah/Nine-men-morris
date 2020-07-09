@@ -4,11 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.groupg.game.board.Board;
-import com.groupg.game.gameobject.CurrentTurn;
 import com.groupg.game.gameobject.PieceColor;
 import com.groupg.game.player.Player;
-
-import java.util.Stack;
 
 public class Game {
     private Texture millTexture;
