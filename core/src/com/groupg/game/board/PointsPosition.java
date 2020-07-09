@@ -102,16 +102,11 @@ public class PointsPosition {
         }
 
         if (verticalPositions.get(currentPosition).contains(nextPosition)) {
-            //System.out.println(Arrays.toString(verticalPositions.get(currentPosition).toArray()));
             ArrayList<Integer> verticalSetArray = new ArrayList<>(verticalPositions.get(currentPosition));
             int currentPositionIndex = verticalSetArray.indexOf(currentPosition);
 
-            //System.out.println(currentPosition +" "+ nextPosition);
-            //System.out.println(Arrays.toString(verticalSetArray.toArray()));
-
             // If current position index is at the first position
             if (currentPositionIndex == 0) return nextPosition == verticalSetArray.get(currentPositionIndex + 1);
-
 
             // If current position index is in the last position
             if (currentPositionIndex == verticalSetArray.size() - 1) return nextPosition == verticalSetArray.get(currentPositionIndex - 1);
@@ -121,5 +116,13 @@ public class PointsPosition {
                     || nextPosition == verticalSetArray.get(currentPositionIndex - 1);
         }
         return false;
+    }
+
+    public ArrayList<Integer> getHorizontalSet(int position) {
+        return new ArrayList<>(horizontalPositions.get(position));
+    }
+
+    public ArrayList<Integer> getVerticalSet(int position) {
+        return new ArrayList<>(verticalPositions.get(position));
     }
 }

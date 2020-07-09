@@ -12,6 +12,8 @@ import com.groupg.game.gameobject.Piece;
 import com.groupg.game.gameobject.PieceColor;
 import com.groupg.game.player.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 
 public class GameRule {
@@ -127,11 +129,71 @@ public class GameRule {
 
     public boolean checkCaptureValid(Vector3 position, PieceColor pieceColor) {
         int pointNumber = board.getPointNumber(position);
+        PieceColor capturedColor = (pieceColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE;
+        BitSet capturedBitBoard = board.getBitBoard(capturedColor);
 
-        if (pointNumber >= 0 && !checkMill(pointNumber, board.getBitBoard(pieceColor))) {
+        boolean allPiecesMill = true;
+        for (int i = 0; i < capturedBitBoard.size(); i++) {
+            if (capturedBitBoard.get(i)) {
+                if (!checkMill(i, capturedBitBoard)) {
+                    allPiecesMill = false;
+                    break;
+                }
+            }
+        }
+
+        if (pointNumber >= 0 && (allPiecesMill || !checkMill(pointNumber, board.getBitBoard(capturedColor))) && capturedBitBoard.get(pointNumber)) {
             board.removePiece(pointNumber);
-            board.getBitBoard((pieceColor == PieceColor.WHITE) ? PieceColor.BLACK : PieceColor.WHITE).clear(pointNumber);
+            capturedBitBoard.clear(pointNumber);
             return true;
+        }
+
+        return false;
+    }
+
+    public boolean checkAvailableLegalMove(PieceColor pieceColor) {
+        BitSet checkAvailableMoveBitBoard = board.getBitBoard(pieceColor);
+
+        if (checkAvailableMoveBitBoard.isEmpty()) return true;
+
+        boolean[] availableMoves = new boolean[checkAvailableMoveBitBoard.size()];
+
+        for (int i = 0; i < checkAvailableMoveBitBoard.size(); i++) {
+            if (checkAvailableMoveBitBoard.get(i)) {
+                ArrayList<Integer> verticalPositionSet = pointsPosition.getVerticalSet(i);
+                ArrayList<Integer> horizontalPositionSet = pointsPosition.getHorizontalSet(i);
+
+                int currentHorizontalIndex = horizontalPositionSet.indexOf(i);
+                int currentVerticalIndex = verticalPositionSet.indexOf(i);
+
+                boolean horizontalMoveAvailable;
+                boolean verticalMoveAvailable;
+
+                if (currentVerticalIndex == 0) {
+                    verticalMoveAvailable = board.isEmptyPoint(verticalPositionSet.get(currentVerticalIndex + 1));
+                } else if (currentVerticalIndex == 1) {
+                    verticalMoveAvailable = board.isEmptyPoint(verticalPositionSet.get(currentVerticalIndex + 1))
+                            || board.isEmptyPoint(verticalPositionSet.get(currentVerticalIndex - 1));
+                } else {
+                    verticalMoveAvailable = board.isEmptyPoint(verticalPositionSet.get(currentVerticalIndex - 1));
+                }
+
+                if (currentHorizontalIndex == 0) {
+                    horizontalMoveAvailable = board.isEmptyPoint(horizontalPositionSet.get(currentHorizontalIndex + 1));
+                } else if (currentHorizontalIndex == 1) {
+                    horizontalMoveAvailable = board.isEmptyPoint(horizontalPositionSet.get(currentHorizontalIndex + 1))
+                            || board.isEmptyPoint(horizontalPositionSet.get(currentHorizontalIndex - 1));
+                } else {
+                    horizontalMoveAvailable = board.isEmptyPoint(horizontalPositionSet.get(currentHorizontalIndex - 1));
+                }
+
+                availableMoves[i] = horizontalMoveAvailable || verticalMoveAvailable;
+            }
+        }
+
+        // If one move is available then return true
+        for (boolean value : availableMoves) {
+            if (value) return true;
         }
 
         return false;

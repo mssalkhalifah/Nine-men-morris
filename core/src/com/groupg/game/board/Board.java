@@ -12,17 +12,16 @@ import java.util.BitSet;
 public class Board {
     private Array<Point> pointArray;
     private Array<Piece> pieceArray;
-    private PointsPosition pointPosition;
     private BitSet whiteBitBoard;
     private BitSet blackBitBoard;
 
     public Board() {
         whiteBitBoard = new BitSet(PointsPosition.NUMBER_OF_POINTS);
         blackBitBoard = new BitSet(PointsPosition.NUMBER_OF_POINTS);
-        pointPosition = new PointsPosition();
         pointArray = new Array<>();
         pieceArray = new Array<>();
 
+        PointsPosition pointPosition = new PointsPosition();
         for (int i = 0; i < PointsPosition.NUMBER_OF_POINTS; i++) {
             pointArray.add(new Point(pointPosition.getPointPosition(i), this, i));
         }
@@ -63,7 +62,7 @@ public class Board {
 
         // Check if it is empty
         if (pointNumber >= 0 && isEmptyPoint(pointNumber)) {
-            pieceArray.add(new Piece(pointPosition.getPointPosition(pointNumber), pieceColor, pointNumber));
+            pieceArray.add(new Piece(new PointsPosition().getPointPosition(pointNumber), pieceColor, pointNumber));
             if (pieceColor == PieceColor.WHITE) {
                 whiteBitBoard.set(pointNumber);
             } else {
