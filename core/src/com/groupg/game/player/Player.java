@@ -9,6 +9,8 @@ import com.groupg.game.gameobject.PieceColor;
 public class Player {
     public static final int NUMBER_OF_PLAYER_PIECES = 9;
 
+    private boolean action;
+
     private int totalNumberOfPieces;
     private int currentNumberOfPieces;
     private int numberOfPiecesPlayed;
@@ -34,7 +36,7 @@ public class Player {
         mousePosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(mousePosition);
 
-        if (isPlay()) {
+        if (isPlay() || action) {
             touchPosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPosition);
         }
@@ -51,6 +53,10 @@ public class Player {
 
     public void setPieceColor(PieceColor pieceColor) {
         this.pieceColor = pieceColor;
+    }
+
+    public void setTouchPosition(Vector3 touchPosition) {
+        this.touchPosition = touchPosition;
     }
 
     public Vector3 getTouchPosition() {
@@ -92,5 +98,13 @@ public class Player {
     public void decrementNumberOfPieces() {
         --totalNumberOfPieces;
         --currentNumberOfPieces;
+    }
+
+    public boolean isAction() {
+        return action;
+    }
+
+    public void setAction(boolean action) {
+        this.action = action;
     }
 }

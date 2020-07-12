@@ -18,6 +18,9 @@ public class Board {
     public Board() {
         whiteBitBoard = new BitSet(PointsPosition.NUMBER_OF_POINTS);
         blackBitBoard = new BitSet(PointsPosition.NUMBER_OF_POINTS);
+    }
+
+    public void initialize() {
         pointArray = new Array<>();
         pieceArray = new Array<>();
 
@@ -73,6 +76,17 @@ public class Board {
         return false;
     }
 
+    public void setPositionValue(PieceColor pieceColor, int positionNumber) {
+        //if (isEmptyPoint(positionNumber)) throw new IllegalArgumentException("Empty!!");
+        if (pieceColor == PieceColor.WHITE) {
+            whiteBitBoard.flip(positionNumber);
+        } else if (pieceColor == PieceColor.BLACK) {
+            blackBitBoard.flip(positionNumber);
+        } else {
+
+        }
+    }
+
     public Piece getSelectPiece(PieceColor pieceColor, Vector3 touchPosition) {
         for (int i = 0; i < pieceArray.size; i++) {
             if (pieceArray.get(i).getPieceColor() == pieceColor && pieceArray.get(i).isCollide(touchPosition)) {
@@ -122,5 +136,42 @@ public class Board {
                 break;
             }
         }
+    }
+
+    public Board getCopy() {
+        Board newBoard = new Board();
+
+        newBoard.whiteBitBoard.or(this.whiteBitBoard);
+        newBoard.blackBitBoard.or(this.blackBitBoard);
+
+        return newBoard;
+    }
+
+    public Board getInvertedBoard() {
+        Board invertedBoard = new Board();
+
+        for (int i = 0; i < PointsPosition.NUMBER_OF_POINTS; i++) {
+            if (whiteBitBoard.get(i)) {
+                invertedBoard.setPositionValue(PieceColor.BLACK, i);
+            } else if (blackBitBoard.get(i)) {
+                invertedBoard.setPositionValue(PieceColor.WHITE, i);
+            }
+        }
+        return invertedBoard;
+    }
+
+    public int getNumberOfPieces(PieceColor pieceColor) {
+        BitSet bitSetBoard = (pieceColor == PieceColor.WHITE) ? whiteBitBoard : blackBitBoard;
+
+        int count = 0;
+        for (int i = 0; i < bitSetBoard.size(); i++) {
+            if (bitSetBoard.get(i)) count++;
+        }
+        return count;
+    }
+
+    @Override
+    public String toString() {
+        return "Black bit board: " + blackBitBoard + "\nWhite Bit board: " + whiteBitBoard;
     }
 }

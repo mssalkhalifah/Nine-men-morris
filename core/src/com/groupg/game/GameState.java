@@ -73,7 +73,7 @@ public class GameState {
     }
 
     public void firstPhase(Player player) {
-        if (gameRule.checkAvailableLegalMove(player.getPieceColor())) {
+        if (gameRule.checkAvailableLegalMove(player.getPieceColor(), this)) {
             if (!player.maxNumberPlayed()) {
                 if (board.addPiece(player.getPieceColor(), player.getTouchPosition())) {
                     player.addPiece();
@@ -90,10 +90,7 @@ public class GameState {
     }
 
     public void secondPhase(Player player) {
-        // If either player gotten less than 3 pieces then the game ends
-        if (gameRule.checkAvailableLegalMove(player.getPieceColor())
-                && (whitePlayer.getCurrentNumberOfPieces() >= 3
-                && blackPlayer.getCurrentNumberOfPieces() >= 3)) {
+        if (gameRule.checkAvailableLegalMove(player.getPieceColor(), this)) {
             player.setSelectedPiece(board.getSelectPiece(player.getPieceColor(), player.getTouchPosition()));
             if (player.getSelectedPiece() != null) {
                 gameStates.push(State.MOVE);
@@ -127,9 +124,9 @@ public class GameState {
     }
 
     public void finishState() {
-        if (whitePlayer.getCurrentNumberOfPieces() < 3 || gameRule.checkAvailableLegalMove(whitePlayer.getPieceColor())) {
+        if (whitePlayer.getCurrentNumberOfPieces() < 3 || gameRule.checkAvailableLegalMove(whitePlayer.getPieceColor(), this)) {
             winTexture = new Texture(Gdx.files.internal("Black_Player_Won.png"));
-        } else if (blackPlayer.getCurrentNumberOfPieces() < 3 || gameRule.checkAvailableLegalMove(blackPlayer.getPieceColor())) {
+        } else if (blackPlayer.getCurrentNumberOfPieces() < 3 || gameRule.checkAvailableLegalMove(blackPlayer.getPieceColor(), this)) {
             winTexture = new Texture(Gdx.files.internal("White_Player_Won.png.png"));
         }
     }

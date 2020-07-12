@@ -48,8 +48,9 @@ public class CurrentTurn {
         currentTurnAnimation = new Animation<>(1f/30f, currentTurnFrameRegion);
         stateTime = 0f;
 
-        Random random = new Random();
-        if (random.nextInt(2) == 1) whitePlayerTurn = true;
+        whitePlayerTurn = true;
+        /*Random random = new Random();
+        if (random.nextInt(2) == 1) whitePlayerTurn = true;*/
         if (whitePlayerTurn) currentFrame = currentTurnFrameRegion[0]; else currentFrame = currentTurnFrameRegion[currentTurnFrameRegion.length - 1];
     }
 

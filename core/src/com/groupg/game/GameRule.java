@@ -13,7 +13,6 @@ import com.groupg.game.gameobject.PieceColor;
 import com.groupg.game.player.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 
 public class GameRule {
@@ -151,14 +150,18 @@ public class GameRule {
         return false;
     }
 
-    public boolean checkAvailableLegalMove(PieceColor pieceColor) {
+    public boolean checkAvailableLegalMove(PieceColor pieceColor, GameState gameState) {
         BitSet checkAvailableMoveBitBoard = board.getBitBoard(pieceColor);
 
         if (checkAvailableMoveBitBoard.isEmpty()) return true;
 
+        if (whitePlayer.getTotalNumberOfPieces() < 3 || blackPlayer.getTotalNumberOfPieces() < 3) return false;
+
         boolean[] availableMoves = new boolean[checkAvailableMoveBitBoard.size()];
 
         for (int i = 0; i < checkAvailableMoveBitBoard.size(); i++) {
+            if (gameState.getGameStates().peek() == State.FIRST_PHASE && board.isEmptyPoint(i)) return true;
+
             if (checkAvailableMoveBitBoard.get(i)) {
                 ArrayList<Integer> verticalPositionSet = pointsPosition.getVerticalSet(i);
                 ArrayList<Integer> horizontalPositionSet = pointsPosition.getHorizontalSet(i);
@@ -187,14 +190,14 @@ public class GameRule {
                     horizontalMoveAvailable = board.isEmptyPoint(horizontalPositionSet.get(currentHorizontalIndex - 1));
                 }
 
-                availableMoves[i] = horizontalMoveAvailable || verticalMoveAvailable;
+                if (horizontalMoveAvailable || verticalMoveAvailable) return true;
             }
         }
 
         // If one move is available then return true
-        for (boolean value : availableMoves) {
-            if (value) return true;
-        }
+        //for (boolean value : availableMoves) {
+        //    if (value) return true;
+        //}
 
         return false;
     }

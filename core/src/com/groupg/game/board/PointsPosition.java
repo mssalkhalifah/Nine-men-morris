@@ -7,10 +7,11 @@ import java.util.*;
 public class PointsPosition {
     public static final int NUMBER_OF_POINTS = 24;
 
-    private final HashMap<Integer, Set<Integer>> verticalPositions = new HashMap<>();
-    private final HashMap<Integer, Set<Integer>> horizontalPositions = new HashMap<>();
+    private static final HashMap<Integer, Set<Integer>> verticalPositions = new HashMap<>();
+    private static final HashMap<Integer, Set<Integer>> horizontalPositions = new HashMap<>();
+    private static final HashMap<Integer, Set<Integer>> adjacentLocations = new HashMap<>();
 
-    private Vector3[] pointPositions;
+    private static Vector3[] pointPositions;
 
     public PointsPosition() {
         int adjacentPositions = 0;
@@ -20,6 +21,7 @@ public class PointsPosition {
             if (i % 3 == 0) adjacentPositions = i;
             horizontalPositions.put(i, new LinkedHashSet<>(Arrays.asList(adjacentPositions, adjacentPositions + 1, adjacentPositions + 2)));
             verticalPositions.put(i, new LinkedHashSet<Integer>());
+            adjacentLocations.put(i, new LinkedHashSet<Integer>());
         }
 
         verticalPositions.get(0).addAll(Arrays.asList(0, 9, 21));
@@ -54,6 +56,31 @@ public class PointsPosition {
         verticalPositions.get(14).addAll(Arrays.asList(2, 14, 23));
         verticalPositions.get(23).addAll(Arrays.asList(2, 14, 23));
 
+        adjacentLocations.get(0).addAll(Arrays.asList(9, 1));
+        adjacentLocations.get(1).addAll(Arrays.asList(0, 2, 4));
+        adjacentLocations.get(2).addAll(Arrays.asList(1, 14));
+        adjacentLocations.get(3).addAll(Arrays.asList(4, 10));
+        adjacentLocations.get(4).addAll(Arrays.asList(1, 3, 5, 7));
+        adjacentLocations.get(5).addAll(Arrays.asList(4, 13));
+        adjacentLocations.get(6).addAll(Arrays.asList(7, 11));
+        adjacentLocations.get(7).addAll(Arrays.asList(4, 6, 8));
+        adjacentLocations.get(8).addAll(Arrays.asList(7, 12));
+        adjacentLocations.get(9).addAll(Arrays.asList(0, 10, 21));
+        adjacentLocations.get(10).addAll(Arrays.asList(3, 11, 18));
+        adjacentLocations.get(11).addAll(Arrays.asList(6, 10, 15));
+        adjacentLocations.get(12).addAll(Arrays.asList(8, 13, 17));
+        adjacentLocations.get(13).addAll(Arrays.asList(5, 12, 14, 20));
+        adjacentLocations.get(14).addAll(Arrays.asList(2, 13, 23));
+        adjacentLocations.get(15).addAll(Arrays.asList(11, 16));
+        adjacentLocations.get(16).addAll(Arrays.asList(15, 17, 19));
+        adjacentLocations.get(17).addAll(Arrays.asList(12, 16));
+        adjacentLocations.get(18).addAll(Arrays.asList(10, 19));
+        adjacentLocations.get(19).addAll(Arrays.asList(16, 18, 20, 22));
+        adjacentLocations.get(20).addAll(Arrays.asList(13, 19));
+        adjacentLocations.get(21).addAll(Arrays.asList(9, 22));
+        adjacentLocations.get(22).addAll(Arrays.asList(19, 21, 23));
+        adjacentLocations.get(23).addAll(Arrays.asList(14, 22));
+
         pointPositions = new Vector3[NUMBER_OF_POINTS];
         pointPositions[0] = new Vector3(307, 489, 0);
         pointPositions[1] = new Vector3(526, 489, 0);
@@ -82,11 +109,15 @@ public class PointsPosition {
     }
 
     // Point ranges from 0 ~ 23
-    public Vector3 getPointPosition(int point) {
+    public static Vector3 getPointPosition(int point) {
         return pointPositions[point];
     }
 
-    public boolean checkMill(int pointPosition, BitSet bitBoard) {
+    public static ArrayList<Integer> getAdjacentLocation(int pointPosition) {
+        return new ArrayList<>(adjacentLocations.get(pointPosition));
+    }
+
+    public static boolean checkMill(int pointPosition, BitSet bitBoard) {
         ArrayList<Integer> horizontalPointSet = new ArrayList<>(horizontalPositions.get(pointPosition));
         ArrayList<Integer> verticalPointSet = new ArrayList<>(verticalPositions.get(pointPosition));
 
@@ -96,7 +127,7 @@ public class PointsPosition {
         return horizontalMill || verticalMill;
     }
 
-    public boolean checkValidMovePosition(int currentPosition, int nextPosition) {
+    public static boolean checkValidMovePosition(int currentPosition, int nextPosition) {
         if (horizontalPositions.get(currentPosition).contains(nextPosition)) {
             return Math.abs(currentPosition - nextPosition) == 1;
         }
@@ -118,11 +149,11 @@ public class PointsPosition {
         return false;
     }
 
-    public ArrayList<Integer> getHorizontalSet(int position) {
+    public static ArrayList<Integer> getHorizontalSet(int position) {
         return new ArrayList<>(horizontalPositions.get(position));
     }
 
-    public ArrayList<Integer> getVerticalSet(int position) {
+    public static ArrayList<Integer> getVerticalSet(int position) {
         return new ArrayList<>(verticalPositions.get(position));
     }
 }
