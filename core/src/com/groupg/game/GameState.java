@@ -101,8 +101,10 @@ public class GameState {
         }
     }
 
-    public void movingState(Player player) {
-        player.setSelectedPiece(board.getSelectPiece(player.getPieceColor(), player.getTouchPosition()));
+    public void movingState(Player player, boolean isAI) {
+        if (!isAI) {
+            player.setSelectedPiece(board.getSelectPiece(player.getPieceColor(), player.getTouchPosition()));
+        }
         if (gameRule.checkMoveValid(player.getSelectedPiece().getPieceNumber(), player.getTouchPosition(), player.getPieceColor())) {
             if (gameRule.checkMill(player.getSelectedPiece().getPieceNumber(), board.getBitBoard(player.getPieceColor()))) {
                 gameStates.pop();

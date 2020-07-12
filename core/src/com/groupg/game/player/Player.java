@@ -57,6 +57,7 @@ public class Player {
 
     public void setTouchPosition(Vector3 touchPosition) {
         this.touchPosition = touchPosition;
+        //camera.unproject(touchPosition);
     }
 
     public Vector3 getTouchPosition() {

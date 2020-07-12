@@ -3,6 +3,7 @@ package com.groupg.game.ai;
 import com.groupg.game.board.Board;
 import com.groupg.game.board.PointsPosition;
 import com.groupg.game.gameobject.PieceColor;
+import com.groupg.game.gameobject.Point;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -13,10 +14,44 @@ public class GenerateMove {
 
         for (int i = 0; i < PointsPosition.NUMBER_OF_POINTS; i++) {
             if (isMaximizer) {
+                // Get all possible move for the maximizer
+                if (currentBoardState.getBitBoard(PieceColor.BLACK).get(i)) {
+                    Board copyCurrentBoard = currentBoardState.getCopy();
+                    ArrayList<Integer> adjacentPosition = PointsPosition.getAdjacentLocation(i);
+                    for (int location : adjacentPosition) {
+                        if (copyCurrentBoard.isEmptyPoint(location)) {
+                            copyCurrentBoard.getBitBoard(PieceColor.BLACK).set(location);
+                            copyCurrentBoard.getBitBoard(PieceColor.BLACK).clear(i);
 
+                            if (PointsPosition.checkMill(location, copyCurrentBoard.getBitBoard(PieceColor.BLACK))) {
+                                possibleBoardStates = getAllRemoveStates(copyCurrentBoard, possibleBoardStates, true);
+                            } else {
+                                possibleBoardStates.add(copyCurrentBoard);
+                            }
+                        }
+                    }
+                }
+            } else { // Get all possible move for the minimizer
+                if (currentBoardState.getBitBoard(PieceColor.WHITE).get(i)) {
+                    Board copyCurrentBoard = currentBoardState.getCopy();
+                    ArrayList<Integer> adjacentPosition = PointsPosition.getAdjacentLocation(i);
+                    for (int location : adjacentPosition) {
+                        if (copyCurrentBoard.isEmptyPoint(location)) {
+                            copyCurrentBoard.getBitBoard(PieceColor.WHITE).set(location);
+                            copyCurrentBoard.getBitBoard(PieceColor.WHITE).clear(i);
+
+                            if (PointsPosition.checkMill(location, copyCurrentBoard.getBitBoard(PieceColor.WHITE))) {
+                                possibleBoardStates = getAllRemoveStates(copyCurrentBoard, possibleBoardStates, false);
+                            } else {
+                                possibleBoardStates.add(copyCurrentBoard);
+                            }
+                        }
+                    }
+                }
             }
         }
-        return null;
+
+        return possibleBoardStates;
     }
 
     public static ArrayList<Board> getOpeningPhasePossibleStates(Board currentBoardState, boolean isMaximizer) {
@@ -29,14 +64,14 @@ public class GenerateMove {
                 if (isMaximizer) {
                     copyCurrentBoard.setPositionValue(PieceColor.BLACK, i);
                     if (PointsPosition.checkMill(i, copyCurrentBoard.getBitBoard(PieceColor.BLACK))) {
-                        possibleBoardStates = (getAllRemoveStates(copyCurrentBoard, possibleBoardStates, true));
+                        possibleBoardStates = getAllRemoveStates(copyCurrentBoard, possibleBoardStates, true);
                     } else {
                         possibleBoardStates.add(copyCurrentBoard);
                     }
                 } else {
                     copyCurrentBoard.setPositionValue(PieceColor.WHITE, i);
                     if (PointsPosition.checkMill(i, copyCurrentBoard.getBitBoard(PieceColor.WHITE))) {
-                        possibleBoardStates = (getAllRemoveStates(copyCurrentBoard, possibleBoardStates, false));
+                        possibleBoardStates = getAllRemoveStates(copyCurrentBoard, possibleBoardStates, false);
                     } else {
                         possibleBoardStates.add(copyCurrentBoard);
                     }

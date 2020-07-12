@@ -25,35 +25,34 @@ public class Game {
     }
 
     public void update(float delta) {
-        Player player = (gameState.getCurrentTurn()) ? whitePlayer : blackPlayer;
-        player.update(delta);
 
-        gameBoard.update(delta, player.getMousePosition());
+        whitePlayer.update(delta);
+
+        gameBoard.update(delta, whitePlayer.getMousePosition());
+        gameState.update(delta);
 
         // If is the black player turn
         if (!gameState.getCurrentTurn()) {
-            int bestNextPosition = MiniMax.getBestOpeningPhaseMove(gameBoard, gameState);
-            player.setTouchPosition(PointsPosition.getPointPosition(bestNextPosition));
-            player.setAction(true);
+            MiniMax.getBestOpeningPhaseMove(gameBoard, gameState, blackPlayer);
         }
 
-        if (player.isPlay() || blackPlayer.isAction()) {
+        if (whitePlayer.isPlay() && gameState.getCurrentTurn()) {
             System.out.println("Current game board: \n" + gameBoard);
             switch (gameState.getGameStates().peek()) {
                 case FIRST_PHASE:
-                    gameState.firstPhase(player);
+                    gameState.firstPhase(whitePlayer);
                     break;
 
                 case SECOND_PHASE:
-                    gameState.secondPhase(player);
+                    gameState.secondPhase(whitePlayer);
                     break;
 
                 case CAPTURE:
-                    gameState.captureState(player);
+                    gameState.captureState(whitePlayer);
                     break;
 
                 case MOVE:
-                    gameState.movingState(player);
+                    gameState.movingState(whitePlayer, false);
                     break;
 
                 case FINISH:
@@ -63,11 +62,9 @@ public class Game {
                 default:
                     throw new IllegalArgumentException("Unknown game state");
             }
-            player.setAction(false);
+            //player.setAction(false);
             System.out.println("Updated game board: \n" + gameBoard + "\n");
         }
-
-        gameState.update(delta);
     }
 
     public void render(float delta, SpriteBatch batch) {
