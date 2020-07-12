@@ -5,7 +5,6 @@ import com.groupg.game.State;
 import com.groupg.game.board.Board;
 import com.groupg.game.board.PointsPosition;
 import com.groupg.game.gameobject.PieceColor;
-import com.groupg.game.gameobject.Point;
 import com.groupg.game.player.Player;
 
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class MiniMax {
             gameState.firstPhase(blackPlayer);
         } else if (gameState.getGameStates().peek() == State.CAPTURE) {
             for (int i = 0; i < PointsPosition.NUMBER_OF_POINTS; i++) {
-                if (!PointsPosition.checkMill(i, board.getBitBoard(PieceColor.WHITE))) {
+                if (board.getBitBoard(PieceColor.WHITE).get(i) && !PointsPosition.checkMill(i, board.getBitBoard(PieceColor.WHITE))) {
                     // AI Captures a piece
                     board.getBitBoard(PieceColor.WHITE).clear(i);
 
@@ -190,7 +189,36 @@ public class MiniMax {
     }
 
     private static int midPhaseStaticEvaluation(Board board) {
-        return openingPhaseStaticEvaluation(board);
+        count++;
+
+        int numberOfWhiteMills = getNumberOfMills(board, false);
+        int numberOfBlackMills = getNumberOfMills(board, true);
+
+        int lastMorris;
+        if (numberOfBlackMills - numberOfWhiteMills > 0) {
+            lastMorris = 1;
+        } else if (numberOfBlackMills - numberOfWhiteMills < 0) {
+            lastMorris = -1;
+        } else {
+            lastMorris = 0;
+        }
+
+        int numberOfBlockedBlack = getNumberOfBlockedOpponentPieces(board, false);
+        int numberOfBlockedWhite = getNumberOfBlockedOpponentPieces(board, true);
+
+        int numberOfBlackPieces = 0;
+        int numberOfWhitePieces = 0;
+        for (int i = 0; i < PointsPosition.NUMBER_OF_POINTS; i++) {
+            if (board.getBitBoard(PieceColor.WHITE).get(i)) numberOfWhitePieces++;
+            if (board.getBitBoard(PieceColor.BLACK).get(i)) numberOfBlackPieces++;
+        }
+
+        int winConfig = 0;
+        if (numberOfBlackPieces < 3) winConfig = -1;
+        if (numberOfWhitePieces < 3) winConfig = 1;
+
+        return 14 * (numberOfBlackMills - numberOfWhiteMills) + 43 * (lastMorris) + 10 * (numberOfBlockedWhite - numberOfBlockedBlack)
+                + 11 * (numberOfBlackPieces - numberOfWhitePieces) + 1086 * winConfig;
     }
 
     private static int openingPhaseStaticEvaluation(Board board) {

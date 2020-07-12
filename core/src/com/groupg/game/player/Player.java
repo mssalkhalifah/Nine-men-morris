@@ -10,6 +10,7 @@ public class Player {
     public static final int NUMBER_OF_PLAYER_PIECES = 9;
 
     private boolean action;
+    private boolean isAI;
 
     private int totalNumberOfPieces;
     private int currentNumberOfPieces;
@@ -33,12 +34,14 @@ public class Player {
     }
 
     public void update(double delta) {
-        mousePosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        camera.unproject(mousePosition);
+        if (!isAI) {
+            mousePosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(mousePosition);
 
-        if (isPlay() || action) {
-            touchPosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(touchPosition);
+            if (isPlay() || action) {
+                touchPosition.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+                camera.unproject(touchPosition);
+            }
         }
     }
 
@@ -107,5 +110,9 @@ public class Player {
 
     public void setAction(boolean action) {
         this.action = action;
+    }
+
+    public void setAI(boolean AI) {
+        isAI = AI;
     }
 }

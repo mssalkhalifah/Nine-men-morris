@@ -1,10 +1,8 @@
 package com.groupg.game;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.groupg.game.ai.Evaluation;
 import com.groupg.game.ai.MiniMax;
 import com.groupg.game.board.Board;
-import com.groupg.game.board.PointsPosition;
 import com.groupg.game.gameobject.PieceColor;
 import com.groupg.game.player.Player;
 
@@ -13,7 +11,6 @@ public class Game {
     private GameState gameState;
     private Player whitePlayer;
     private Player blackPlayer;
-    private Evaluation evaluationBoard;
 
     public Game(MyGame myGame) {
         whitePlayer = new Player(myGame.getCamera(), PieceColor.WHITE);
@@ -21,7 +18,7 @@ public class Game {
         gameBoard = new Board();
         gameBoard.initialize();
         gameState = new GameState(whitePlayer, blackPlayer, gameBoard);
-        evaluationBoard = new Evaluation();
+        blackPlayer.setAI(true);
     }
 
     public void update(float delta) {
